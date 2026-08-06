@@ -7,16 +7,23 @@ Automatise la validation d'une methode analytique lineaire
 d'etalonnage : regression lineaire, R2, LOD, LOQ, et verdict de
 conformite -- avec un rapport et un graphique.
 
+NOUVEAU : peut lire une gamme directement depuis un fichier CSV.
+
 Concu par un technicien en chimie analytique pour supprimer le
 traitement manuel sous tableur (des heures -> quelques secondes,
 sans erreur de recopie, resultat reproductible).
 
-Donnees d'exemple = 100 % synthetiques (aucune donnee reelle de labo).
+Utilisation :
+    python validation_gamme.py                  # demo sur donnees synthetiques
+    python validation_gamme.py gamme.csv        # sur ton propre fichier CSV
+    (le CSV doit avoir 2 colonnes : concentration, absorbance)
 
 Auteur : Martial
 """
 
+import sys
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -63,6 +70,18 @@ def valider_gamme(concentrations, absorbances, seuil_r2=0.995):
     }
 
 
+def charger_gamme_csv(chemin, col_conc="concentration", col_abs="absorbance"):
+    """Charge une gamme depuis un fichier CSV.
+
+    Le CSV doit contenir deux colonnes nommees (par defaut
+    'concentration' et 'absorbance'). Renvoie deux tableaux NumPy.
+    """
+    df = pd.read_csv(chemin)
+    concentrations = df[col_conc].to_numpy()
+    absorbances = df[col_abs].to_numpy()
+    return concentrations, absorbances
+
+
 def afficher_rapport(nom, rapport):
     """Affiche un rapport de validation lisible dans la console."""
     print(f"\n----- RAPPORT DE VALIDATION : {nom} -----")
@@ -101,9 +120,16 @@ def generer_gamme_demo(seed=42):
 
 
 if __name__ == "__main__":
-    # Demonstration sur donnees synthetiques
-    concentrations, absorbances = generer_gamme_demo()
+    # Si un fichier CSV est passe en argument, on l'utilise ;
+    # sinon on retombe sur la demonstration synthetique.
+    if len(sys.argv) > 1:
+        chemin = sys.argv[1]
+        concentrations, absorbances = charger_gamme_csv(chemin)
+        nom = f"Fichier : {chemin}"
+    else:
+        concentrations, absorbances = generer_gamme_demo()
+        nom = "Gamme de demonstration (synthetique)"
 
     rapport = valider_gamme(concentrations, absorbances)
-    afficher_rapport("Gamme de demonstration", rapport)
+    afficher_rapport(nom, rapport)
     tracer_gamme(concentrations, absorbances, rapport)

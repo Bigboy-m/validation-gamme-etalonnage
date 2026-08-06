@@ -53,10 +53,16 @@ rapport = valider_gamme(concentrations, absorbances)
 afficher_rapport("Ma gamme", rapport)
 ```
 
-Ou lancer la démonstration intégrée :
+Lancer la démonstration intégrée (données synthétiques) :
 
 ```bash
 python validation_gamme.py
+```
+
+Ou valider **ton propre fichier CSV** (2 colonnes : `concentration`, `absorbance`) :
+
+```bash
+python validation_gamme.py gamme.csv
 ```
 
 ## Note sur les données
@@ -73,7 +79,7 @@ python -m pip install -r requirements.txt
 ## Améliorations prévues
 
 - Écart-type résiduel rigoureux à `n-2` degrés de liberté
-- Import direct depuis un fichier CSV
+- ~~Import direct depuis un fichier CSV~~ ✅ fait
 - Export du rapport en PDF
 - Détection automatique du domaine de linéarité
 
