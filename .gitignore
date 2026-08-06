@@ -1,0 +1,13 @@
+# Fichiers Python compilés
+__pycache__/
+*.pyc
+
+# Environnements virtuels
+venv/
+.venv/
+env/
+
+# Fichiers systeme / editeur
+.DS_Store
+.vscode/
+*.tmp
