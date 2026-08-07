@@ -22,6 +22,7 @@ Auteur : Martial
 """
 
 import sys
+from datetime import date
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -111,6 +112,47 @@ def tracer_gamme(concentrations, absorbances, rapport, fichier="exemple_rapport.
     print(f"\nGraphique enregistre : {fichier}")
 
 
+def exporter_rapport_pdf(concentrations, absorbances, rapport, nom="Gamme",
+                         fichier="rapport_validation.pdf"):
+    """Genere un rapport de validation d'une page (A4) au format PDF :
+    graphique + tableau de resultats + date. Pret a archiver / envoyer."""
+    x = np.asarray(concentrations, dtype=float)
+    y = np.asarray(absorbances, dtype=float)
+    y_droite = rapport["pente"] * x + rapport["ordonnee"]
+
+    # Page A4 portrait (en pouces)
+    fig = plt.figure(figsize=(8.27, 11.69))
+    fig.suptitle("RAPPORT DE VALIDATION DE METHODE", fontsize=16, fontweight="bold")
+
+    # --- Graphique dans la moitie haute ---
+    ax = fig.add_axes([0.12, 0.45, 0.78, 0.42])
+    ax.scatter(x, y, color="crimson", label="Points mesures")
+    ax.plot(x, y_droite, color="navy", label="Droite ajustee")
+    ax.set_xlabel("Concentration")
+    ax.set_ylabel("Absorbance")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # --- Bloc de resultats dans la moitie basse ---
+    couleur = "green" if rapport["verdict"] == "CONFORME" else "red"
+    lignes = [
+        f"Gamme analysee : {nom}",
+        f"Date du rapport : {date.today().isoformat()}",
+        "",
+        f"Equation de la droite : A = {rapport['pente']:.4f} * C + {rapport['ordonnee']:.4f}",
+        f"Coefficient R2        : {rapport['R2']:.5f}",
+        f"LOD (limite detection): {rapport['LOD']:.3f}",
+        f"LOQ (limite quantif.) : {rapport['LOQ']:.3f}",
+    ]
+    fig.text(0.12, 0.18, "\n".join(lignes), fontsize=11, family="monospace", va="bottom")
+    fig.text(0.12, 0.10, f"VERDICT : {rapport['verdict']}",
+             fontsize=14, fontweight="bold", color=couleur)
+
+    fig.savefig(fichier)
+    plt.close(fig)
+    print(f"Rapport PDF genere : {fichier}")
+
+
 def generer_gamme_demo(seed=42):
     """Genere une gamme d'etalonnage SYNTHETIQUE realiste (donnees inventees)."""
     rng = np.random.default_rng(seed)
@@ -133,3 +175,4 @@ if __name__ == "__main__":
     rapport = valider_gamme(concentrations, absorbances)
     afficher_rapport(nom, rapport)
     tracer_gamme(concentrations, absorbances, rapport)
+    exporter_rapport_pdf(concentrations, absorbances, rapport, nom=nom)

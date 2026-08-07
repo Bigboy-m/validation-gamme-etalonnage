@@ -26,7 +26,8 @@ automatiquement :
 - la **LOD** (limite de détection) et la **LOQ** (limite de quantification), selon
   l'approche ICH `LOD = 3.3·σ/pente`, `LOQ = 10·σ/pente` ;
 - un **verdict de conformité** automatique (CONFORME / NON CONFORME) ;
-- un **graphique** de la gamme avec la droite ajustée.
+- un **graphique** de la gamme avec la droite ajustée ;
+- un **rapport PDF** d'une page (graphique + résultats + date), prêt à archiver.
 
 ## Exemple de résultat
 
@@ -80,7 +81,7 @@ python -m pip install -r requirements.txt
 
 - Écart-type résiduel rigoureux à `n-2` degrés de liberté
 - ~~Import direct depuis un fichier CSV~~ ✅ fait
-- Export du rapport en PDF
+- ~~Export du rapport en PDF~~ ✅ fait
 - Détection automatique du domaine de linéarité
 
 ---
